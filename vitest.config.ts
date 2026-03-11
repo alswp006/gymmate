@@ -11,6 +11,9 @@ export default defineConfig({
     testTimeout: 10000,
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "src") },
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+      "expo-sqlite": path.resolve(__dirname, "src/__mocks__/expo-sqlite.ts"),
+    },
   },
 });

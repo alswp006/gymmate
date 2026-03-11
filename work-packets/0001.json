@@ -1,0 +1,42 @@
+{
+  "id": "0001",
+  "title": "Core types, UUID helper, and MVP models + validators",
+  "epic": "Epic 1 (Data/Store)",
+  "task": {
+    "description": "Add shared offline-first types, UUID generator, and minimal TS models for onboarding + workouts + sync queue. Include a pure onboarding validator enforcing height/weight ranges and goal enum; ensure strict TS compiles without app wiring.",
+    "acceptance_criteria": [
+      "src/lib/types.ts exports SyncStatus union exactly \"pending\"|\"synced\"|\"error\" and ApiErrorResponse shape { error: string; details?: any }",
+      "src/lib/types.ts exports IsoDateString and IsoDateTimeString as string alias types",
+      "createUuid() returns a string with length >= 8 and is not all whitespace",
+      "validateOnboardingProfileInput({goal,heightCm,weightKg}) returns ok:false with fieldErrors.heightCm when heightCm<80 or >250; returns fieldErrors.weightKg when weightKg<20 or >300",
+      "WorkoutSession/ExerciseEntry/SetEntry/CardioEntry types include id, foreign keys, createdAt, updatedAt, syncStatus; SetEntry includes restPlannedSec and completedAt fields",
+      "SyncQueueItem type includes id, createdAt, attemptCount, status, method, path, body, entityType, entityId, lastError?"
+    ]
+  },
+  "covers": [
+    "F1-AC4",
+    "F2-AC1",
+    "F2-AC3",
+    "F2-AC4",
+    "F2-AC8",
+    "F8-AC1",
+    "F8-AC5"
+  ],
+  "files": [
+    "src/lib/types.ts",
+    "src/lib/uuid.ts",
+    "src/lib/models/onboardingProfile.ts",
+    "src/lib/models/workouts.ts",
+    "src/lib/models/sync.ts"
+  ],
+  "definition_of_done": [
+    "TypeScript strict build passes",
+    "All new exports are used or intentionally exported without lint errors",
+    "No runtime code path required; app compiles after merge"
+  ],
+  "depends_on": [],
+  "db_schema": "export type SyncStatus = \"pending\" | \"synced\" | \"error\";\n\nexport interface OnboardingProfile {\n  id: string;\n  goal: \"strength\" | \"diet\" | \"maintain\";\n  heightCm: number;\n  weightKg: number;\n  createdAt: string;\n  updatedAt: string;\n  syncStatus: SyncStatus;\n}\n\nexport interface WorkoutSession {\n  id: string;\n  startedAt: string;\n  date: string;\n  endedAt?: string;\n  isCompleted: boolean;\n  totalVolumeKg?: number;\n  totalDurationSec?: number;\n  createdAt: string;\n  updatedAt: string;\n  syncStatus: SyncStatus;\n}\n\nexport interface ExerciseEntry {\n  id: string;\n  sessionId: string;\n  name: string;\n  category?: string;\n  type: \"weight\" | \"cardio\";\n  order: number;\n  note?: string;\n  createdAt: string;\n  updatedAt: string;\n  syncStatus: SyncStatus;\n}\n\nexport interface SetEntry {\n  id: string;\n  exerciseId: string;\n  setNumber: number;\n  weightKg: number;\n  reps: number;\n  restPlannedSec: number;\n  completedAt?: string;\n  createdAt: string;\n  updatedAt: string;\n  syncStatus: SyncStatus;\n}\n\nexport interface CardioEntry {\n  id: string;\n  exerciseId: string;\n  durationSec: number;\n  distanceKm?: number;\n  createdAt: string;\n  updatedAt: string;\n  syncStatus: SyncStatus;\n}\n\nexport interface SyncQueueItem {\n  id: string;\n  createdAt: string;\n  attemptCount: number;\n  status: \"pending\" | \"error\";\n  method: \"POST\" | \"PATCH\" | \"DELETE\";\n  path: string;\n  body: unknown | null;\n  entityType: string;\n  entityId: string;\n  lastError?: string;\n}",
+  "api_contract": "",
+  "dependencies": [],
+  "ui_requirements": ""
+}

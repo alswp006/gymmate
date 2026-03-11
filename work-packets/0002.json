@@ -1,0 +1,40 @@
+{
+  "id": "0002",
+  "title": "Expo SQLite init + generic entities repo + sync queue repo",
+  "epic": "Epic 1 (Data/Store)",
+  "task": {
+    "description": "Implement Expo SQLite wrapper with idempotent init plus two repositories: (1) generic JSON entity table for offline-first storage and (2) sync_queue table for pending mutations. Provide CRUD helpers used by stores and sync engine.",
+    "acceptance_criteria": [
+      "initDb() can be called twice consecutively without throwing and creates tables if missing",
+      "upsertEntity(entityType,id,json,updatedAt,syncStatus) inserts or replaces a row and getEntity returns deep-equal parsed JSON",
+      "listEntities(entityType) returns an array sorted by updatedAt DESC (string compare)",
+      "enqueueSyncItem persists an item and listPendingSyncItems returns items ordered by createdAt ASC",
+      "updateSyncItem(itemId,patch) updates attemptCount/status/lastError; deleteSyncItem removes the row",
+      "All functions return Promises and do not block the JS thread with large synchronous loops"
+    ]
+  },
+  "covers": [
+    "F8-AC1",
+    "F8-AC2",
+    "F8-AC5"
+  ],
+  "files": [
+    "src/lib/storage/db.ts",
+    "src/lib/storage/entitiesRepo.ts",
+    "src/lib/storage/syncQueueRepo.ts"
+  ],
+  "definition_of_done": [
+    "TypeScript strict build passes",
+    "No screen imports required; app compiles after merge",
+    "SQLite init and queries use parameterized statements (no string interpolation for values)"
+  ],
+  "depends_on": [
+    "0001"
+  ],
+  "db_schema": "",
+  "api_contract": "",
+  "dependencies": [
+    "expo-sqlite"
+  ],
+  "ui_requirements": ""
+}
